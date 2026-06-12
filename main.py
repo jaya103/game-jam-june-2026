@@ -3,6 +3,7 @@ import pygame
 
 # pygame setup
 pygame.init()
+pygame.window.title.set("The Great Bearwakening")
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 running = True
