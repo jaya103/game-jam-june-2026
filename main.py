@@ -21,9 +21,6 @@ while running:
 
     pygame.draw.circle(screen, "red", player_pos, 40)
 
-    player_x = max(0, min(player_x, 1280 - 40))
-    player_y = max(0, min(player_y, 720 - 40))  
-
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
