@@ -12,6 +12,7 @@ running = True
 dt = 0
 score = 0
 score_increment = 10
+start_ticks = pygame.time.get_ticks()
 font = pygame.font.Font(None, 36)
 
 
@@ -27,8 +28,14 @@ while running:
 
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     screen.blit(score_text, (10, 10)) 
-    font = pygame.font.Font('arial.ttf', 48)
 
+    seconds = (pygame.time.get_ticks() - start_ticks)/1000
+    if seconds > 10: 
+        break
+    
+    timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
+    screen.blit(timer_text, (10, 50))
+    
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         player_pos.y -= 300 * dt
