@@ -1,6 +1,5 @@
 # Example file showing a basic pygame "game loop"
 import pygame
-from gameformini import minigame
 from events import handle_events
 from starting_scene import StartingScene
 

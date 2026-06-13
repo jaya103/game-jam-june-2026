@@ -1,3 +1,4 @@
+from gameformini import MiniGame
 import pygame
 
 from scene import Scene
@@ -68,6 +69,8 @@ class MainScene(Scene):
                 player_rect.right = wall_rects[collidelist[0]].left
         if keys[pygame.K_ESCAPE]:
             return None
+        if keys[pygame.K_SPACE]:
+            return MiniGame(self)
 
         for tile in wall_rects:
             pygame.draw.rect(screen, (100, 100, 100), tile)    
