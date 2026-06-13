@@ -1,9 +1,6 @@
 import pygame
 from scene import Scene
-
-
-
-
+import time
 
 class MiniGameScene(Scene):
     def __init__(self, main_scene=None):
@@ -13,7 +10,7 @@ class MiniGameScene(Scene):
         self.capture_bar_position = 0
         self.acceleration = 0
         self.velocity = 0
-
+        
     def render(self, screen, dt):
         global score, current_screen
         global current_screen, running, start_ticks
@@ -32,7 +29,6 @@ class MiniGameScene(Scene):
         the minigame and return to the main game, but you won't get any points for that.
     """
         
-     
         font = pygame.font.Font(None, 48)
         score_text = font.render(f'Score: {self.score}', True, (255, 255, 255))
         screen.blit(score_text, (10, 10)) 
@@ -64,12 +60,10 @@ class MiniGameScene(Scene):
             self.acceleration -= (0.5)
 
         self.capture_bar_position += self.acceleration
-        if self.capture_bar_position > 700:
-            self.capture_bar_position = 700
+        if self.capture_bar_position > 750: 
+            self.capture_bar_position, self.acceleration = 750, -self.acceleration * 0.6
         if self.capture_bar_position < 0:
-            self.capture_bar_position = 0
-            self.acceleration = 0
-
+            self.capture_bar_position, self.acceleration = 0, -self.acceleration * 0.6
 
         if keys[pygame.K_ESCAPE]:
             return None
