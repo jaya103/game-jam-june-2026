@@ -1,6 +1,10 @@
 # Example file showing a basic pygame "game loop"
 import pygame
+<<<<<<< HEAD
 import  argparse
+=======
+from gameformini import minigame
+>>>>>>> 664aa796586e1dda3cc3595acad08dcde7a53401
 from events import handle_events
 from starting_scene import StartingScene
 from ending_scene import EndingScene
