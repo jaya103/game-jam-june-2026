@@ -9,7 +9,6 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 running = True
 dt = 0
 current_screen = None
@@ -65,6 +64,31 @@ def ending_screen(screen, dt):
     
     return True
 
+level = [
+    ".....................",
+    ".....................",
+    ".....................",
+    "WWWWWWWWWWWWWWWWWWWWW",
+    "W...................W",
+    "W......WWWWWW...PWWWW",
+    "W...........WWWWWW..W",
+    "WWWWWWWWW........WW.W",
+    "W...................W",
+    "WWWWWWWWWWWWWWWWWWWWW"
+]
+TILE_SIZE = 40
+def build_level(level_data):
+    tiles = []
+    for y, row in enumerate(level_data):
+        for x, tile in enumerate(row):
+            if tile == "W":
+                rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                tiles.append(rect)
+            if tile == "P":
+                player_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    return tiles, player_rect
+wall_rects, player_rect = build_level(level)
+
 def main_game(screen, dt):
     global running
     global current_screen
@@ -72,14 +96,12 @@ def main_game(screen, dt):
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
-    pygame.draw.circle(screen, "red", player_pos, 40)
-
     font = pygame.font.Font(None, 48)
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     screen.blit(score_text, (10, 10)) 
 
     seconds = (pygame.time.get_ticks() - start_ticks)/1000
-    if seconds > 10: 
+    if seconds > 100: 
         current_screen = ending_screen
     
     timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
@@ -87,28 +109,27 @@ def main_game(screen, dt):
     
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        player_pos.y -= 300 * dt
+        player_rect.y -= 300 * dt
+        if collidelist := player_rect.collidelistall(wall_rects):
+            player_rect.top = wall_rects[collidelist[0]].bottom
     if keys[pygame.K_s]:
-        player_pos.y += 300 * dt
+        player_rect.y += 300 * dt
+        if collidelist := player_rect.collidelistall(wall_rects):
+            player_rect.bottom = wall_rects[collidelist[0]].top
     if keys[pygame.K_a]:
-        player_pos.x -= 300 * dt
+        player_rect.x -= 300 * dt
+        if collidelist := player_rect.collidelistall(wall_rects):
+            player_rect.left = wall_rects[collidelist[0]].right
     if keys[pygame.K_d]:
-        player_pos.x += 300 * dt
+        player_rect.x += 300 * dt
+        if collidelist := player_rect.collidelistall(wall_rects):
+            player_rect.right = wall_rects[collidelist[0]].left
     if keys[pygame.K_ESCAPE]:
         running = False
 
-    if player_pos.x < 40:
-        player_pos.x = 40
-    if player_pos.x > screen.get_width() - 40:
-        player_pos.x = screen.get_width() - 40
-    if player_pos.y < 40:
-        player_pos.y = 40
-    if player_pos.y > screen.get_height() - 40:
-        player_pos.y = screen.get_height() - 40
-    
-
-    # RENDER YOUR GAME HERE
-    return True
+    for tile in wall_rects:
+        pygame.draw.rect(screen, (100, 100, 100), tile)    
+    pygame.draw.rect(screen, (0, 255, 0), player_rect)
 
 current_screen = starting_menu
 while running:
