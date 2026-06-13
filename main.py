@@ -1,11 +1,11 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 import argparse
-from gameformini import minigame
 from events import handle_events
 from starting_scene import StartingScene
 from ending_scene import EndingScene
 from main_scene import MainScene
+from minigame_scene import MiniGameScene
 
 # pygame setup!
 pygame.init()
@@ -29,7 +29,8 @@ args = parser.parse_args()
 scene_mapping = {
     'starting_scene': StartingScene,
     'main_scene': MainScene,
-    'ending_scene': EndingScene
+    'ending_scene': EndingScene,
+    'minigame_scene': MiniGameScene
 }
 
 current_scene = scene_mapping.get(args.scene, StartingScene)()
