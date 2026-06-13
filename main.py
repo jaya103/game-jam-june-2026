@@ -1,6 +1,7 @@
 # Example file showing a basic pygame "game loop"
 import pygame
 import argparse
+import asyncio
 from events import handle_events
 from starting_scene import StartingScene
 from ending_scene import EndingScene
@@ -34,14 +35,18 @@ scene_mapping = {
 }
 
 current_scene = scene_mapping.get(args.scene, StartingScene)()
-while current_scene:  # This will be None if the user pressed Esc
-    # poll for events
-    handle_events()
+async def main():
+    global current_scene, dt
+    while current_scene:  # This will be None if the user pressed Esc
+        # poll for events
+        handle_events()
 
-    current_scene = current_scene.render(screen, dt)
+        current_scene = current_scene.render(screen, dt)
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-    dt = clock.tick(60) / 1000
+        # flip() the display to put your work on screen
+        pygame.display.flip()
+        dt = clock.tick(60) / 1000
+        await asyncio.sleep(0)  # yield control to the event loop to keep the UI responsive (for HTML)
 
-pygame.quit()
+if __name__ == "__main__":
+    asyncio.run(main())
