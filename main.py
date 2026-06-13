@@ -36,9 +36,9 @@ def main_game(screen, dt):
 
     pygame.draw.circle(screen, "red", player_pos, 40)
 
+    font = pygame.font.Font(None, 48)
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     screen.blit(score_text, (10, 10)) 
-    font = pygame.font.Font('arial.ttf', 48)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
