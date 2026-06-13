@@ -4,9 +4,8 @@ from events import handle_events
 
 # pygame setup
 pygame.init()
-width, height = 640, 480
-hbox, vbox = 20, 20
-screen = pygame.display.set_mode((width, height))
+pygame.window.title.set("The Great Bearwakening")
+screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 running = True
