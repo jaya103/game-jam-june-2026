@@ -1,7 +1,10 @@
 # Example file showing a basic pygame "game loop"
 import pygame
+import  argparse
 from events import handle_events
 from starting_scene import StartingScene
+from ending_scene import EndingScene
+from main_scene import MainScene
 
 # pygame setup!
 pygame.init()
@@ -14,7 +17,21 @@ dt = 0
 current_screen = None
 font = pygame.font.Font(None, 36)
 
-current_scene = StartingScene()
+# Parse command line options
+parser = argparse.ArgumentParser(
+                    prog='The Great Bearwakening',
+                    description='Our game jam game')
+parser.add_argument('-s', '--scene',
+                    default='starting_scene')  # on/off flag
+args = parser.parse_args()
+
+scene_mapping = {
+    'starting_scene': StartingScene,
+    'main_scene': MainScene,
+    'ending_scene': EndingScene
+}
+
+current_scene = scene_mapping.get(args.scene, StartingScene)()
 while current_scene:  # This will be None if the user pressed Esc
     # poll for events
     handle_events()
@@ -24,6 +41,5 @@ while current_scene:  # This will be None if the user pressed Esc
     # flip() the display to put your work on screen
     pygame.display.flip()
     dt = clock.tick(60) / 1000
-
 
 pygame.quit()
