@@ -31,7 +31,8 @@ def main_menu(screen, dt):
 
 def main_game(screen, dt):
     global running
-    global current_screen      
+    global current_screen
+    global score, start_ticks
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
@@ -43,7 +44,8 @@ def main_game(screen, dt):
 
     seconds = (pygame.time.get_ticks() - start_ticks)/1000
     if seconds > 10: 
-        break
+        score = 0
+        start_ticks = pygame.time.get_ticks()
     
     timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
     screen.blit(timer_text, (10, 50))
