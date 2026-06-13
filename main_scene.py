@@ -1,9 +1,41 @@
-from minigame_scene import MiniGameScene
+from tokenize import group
+
 import pygame
+import pytmx
+import pyscroll
 from collections import defaultdict
 
 from scene import Scene
 from ending_scene import EndingScene
+from minigame_scene import MiniGameScene
+
+class Sprite(pygame.sprite.Sprite):
+    """
+    Simple Sprite class for on-screen things
+    
+    """
+    def __init__(self, surface, rect) -> None:
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = surface
+        self.rect = rect
+
+def draw_map(screen, map_data, player_sprite, player_rect):
+    # Make the scrolling layer
+    screen_size = (1280, 720)
+    map_layer = pyscroll.BufferedRenderer(map_data, screen_size, zoom=3)
+
+    # make the PyGame SpriteGroup with a scrolling map
+    group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
+
+    group.add(Sprite(player_sprite, player_rect))
+
+    # Center the layer and sprites on a sprite
+    group.center(player_rect.center)
+
+    # Draw the layer
+    group.draw(screen)
+
 
 level = [
     ".....................",
@@ -29,6 +61,7 @@ def build_level(level_data):
                 player_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
     return tiles, player_rect
 wall_rects, player_rect = build_level(level)
+wall_rects = []
 
 DOWN = "down"
 UP = "up"
@@ -56,6 +89,11 @@ class MainScene(Scene):
         for y in range(4):
             for x in range(3):
                 self.player_sprites[y_names[y]][x_names[x]] = self.player_spritesheet_img.subsurface(pygame.Rect(PLAYER_SPRITESHEET_SIZE*x, PLAYER_SPRITESHEET_SIZE*y, PLAYER_SPRITESHEET_SIZE, PLAYER_SPRITESHEET_SIZE))
+
+        # --- Load TMX Map ---
+        tmx_data = pytmx.load_pygame("map/thin_hedges.tmx")
+        # Make data source for the map
+        self.map_data = pyscroll.TiledMapData(tmx_data)
 
     def render(self, screen, dt):
         screen.fill("purple")
@@ -113,8 +151,11 @@ class MainScene(Scene):
         if keys[pygame.K_SPACE]:
             return MiniGameScene(self)
 
-        for tile in wall_rects:
-            pygame.draw.rect(screen, (100, 100, 100), tile)
-        screen.blit(self.player_sprites[self.last_player_direction][self.player_position], player_rect)
+        draw_map(screen, self.map_data, self.player_sprites[self.last_player_direction][self.player_position],player_rect)
+
+        #for tile in wall_rects:
+        #    pygame.draw.rect(screen, (100, 100, 100), tile)
+        #screen.blit(self.player_sprites[self.last_player_direction][self.player_position], player_rect)
+
 
         return self
