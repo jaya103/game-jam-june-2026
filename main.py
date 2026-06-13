@@ -1,5 +1,6 @@
 # Example file showing a basic pygame "game loop"
 import pygame
+from gameformini import minigame
 from events import handle_events
 
 # pygame setup!
@@ -16,6 +17,8 @@ score = 0
 score_increment = 10
 start_ticks = 0
 font = pygame.font.Font(None, 36)
+
+
 
 def starting_menu(screen, dt):
     global current_screen, running, start_ticks
@@ -126,6 +129,8 @@ def main_game(screen, dt):
             player_rect.right = wall_rects[collidelist[0]].left
     if keys[pygame.K_ESCAPE]:
         running = False
+    if keys[pygame.K_SPACE]:
+        minigame(screen, dt)
 
     for tile in wall_rects:
         pygame.draw.rect(screen, (100, 100, 100), tile)    
