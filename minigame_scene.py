@@ -227,14 +227,14 @@ class MiniGameScene(Scene):
         if self.capture_bar_position < 0:
             self.capture_bar_position, self.acceleration = 0, -self.acceleration * 0.6
 
-        # Drain the main-scene score by 1 every second after first bear contact.
-        if self.score_drain_active and self.main_scene is not None:
+        # Drain the progress bar by 1 every second after first bear contact.
+        if self.score_drain_active and self.progress is not None:
             self.score_drain_timer += dt
             while self.score_drain_timer >= 1.0:
                 self.score_drain_timer -= 1.0
-                self.main_scene.score -= 1
-                if self.main_scene.score < 0:
-                    self.main_scene.score = 0
+                self.progress -= 1
+                if self.progress < 0:
+                    self.progress = 0
 
         if keys[pygame.K_ESCAPE]:
             return None
@@ -243,8 +243,8 @@ class MiniGameScene(Scene):
         if self.progress >= 100:
             return VictoryScene(self.main_scene)
 
-        # Lose condition: main-scene score hit 0 after drain started.
-        if self.main_scene is not None and self.main_scene.score <= 0 and self.score_drain_active:
+        # Lose condition: progress hit 0 after drain started.
+        if self.progress is not None and self.progress <= 0 and self.score_drain_active:
             return FailureScene(self.main_scene)
 
         return self
