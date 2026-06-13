@@ -2,7 +2,7 @@
 import pygame
 from events import handle_events
 
-# pygame setup
+# pygame setup!
 pygame.init()
 pygame.display.set_caption("The Great Bearwakening")
 screen = pygame.display.set_mode((1280, 720))
