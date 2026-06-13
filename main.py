@@ -63,7 +63,7 @@ level = [
     "W...................W",
     "WWWWWWWWWWWWWWWWWWWWW"
 ]
-TILE_SIZE = 40
+TILE_SIZE = 50
 def build_level(level_data):
     tiles = []
     for y, row in enumerate(level_data):
