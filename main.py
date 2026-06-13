@@ -1,4 +1,3 @@
-# Example file showing a basic pygame "game loop"
 import pygame
 import argparse
 import asyncio
@@ -8,7 +7,6 @@ from ending_scene import EndingScene
 from main_scene import MainScene
 from minigame_scene import MiniGameScene
 
-# pygame setup!
 pygame.init()
 pygame.display.set_caption("The Great Bearwakening")
 SCREEN_WIDTH = 1280
@@ -19,7 +17,7 @@ dt = 0
 current_screen = None
 font = pygame.font.Font(None, 36)
 
-# Parse command line options
+
 parser = argparse.ArgumentParser(
                     prog='The Great Bearwakening',
                     description='Our game jam game')

@@ -1,3 +1,5 @@
+from minigame_scene import MiniGameScene
+from tutorial_scene import TutorialScene
 from tokenize import group
 
 import pygame
@@ -81,6 +83,9 @@ class MainScene(Scene):
         self.player_position = IDLE
         self.player_walk_cycle_secs = 0.3
         self.player_time_moving = 0
+        self.show_minigame_popup = False
+        self.space_was_down = False
+        self.mouse_was_down = True
         y_names = {0: DOWN, 1: LEFT, 2: RIGHT, 3: UP}
         x_names = {0: IDLE, 1: WALK_1, 2: WALK_2}
         for y in range(4):
@@ -112,7 +117,7 @@ class MainScene(Scene):
         screen.blit(score_text, (10, 10)) 
 
         seconds = (pygame.time.get_ticks() - self.start_ticks)/1000
-        if seconds > 20: 
+        if seconds > 100: 
             return EndingScene()
         
         timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
@@ -157,9 +162,49 @@ class MainScene(Scene):
 
         if keys[pygame.K_ESCAPE]:
             return None
-        if keys[pygame.K_SPACE]:
+        space_pressed = keys[pygame.K_SPACE]
+        if space_pressed and not self.space_was_down:
+            self.space_was_down = True
             return MiniGameScene(self)
+        self.space_was_down = space_pressed
 
         draw_map(screen, self.map_data, self.player_sprites[self.last_player_direction][self.player_position], self.player_rect)
+
+        # Minigame popup: shown after the tutorial has been dismissed.
+        if self.show_minigame_popup:
+            popup_w, popup_h = 360, 140
+            popup_x = screen.get_width() - popup_w - 20
+            popup_y = 20
+            popup_rect = pygame.Rect(popup_x, popup_y, popup_w, popup_h)
+            pygame.draw.rect(screen, (30, 30, 30), popup_rect, border_radius=8)
+            pygame.draw.rect(screen, (255, 255, 255), popup_rect, width=2, border_radius=8)
+
+            popup_font = pygame.font.Font(None, 32)
+            line1 = popup_font.render("Ready for the minigame?", True, "white")
+            screen.blit(line1, (popup_x + (popup_w - line1.get_width()) // 2, popup_y + 16))
+
+            btn_w, btn_h = 200, 56
+            btn_rect = pygame.Rect(
+                popup_x + (popup_w - btn_w) // 2,
+                popup_y + popup_h - btn_h - 16,
+                btn_w, btn_h,
+            )
+            mouse_pos = pygame.mouse.get_pos()
+            hovering = btn_rect.collidepoint(mouse_pos)
+            btn_color = (90, 160, 90) if hovering else (60, 120, 60)
+            pygame.draw.rect(screen, btn_color, btn_rect, border_radius=6)
+            pygame.draw.rect(screen, "white", btn_rect, width=2, border_radius=6)
+            btn_label = popup_font.render("Start Minigame", True, "white")
+            screen.blit(btn_label, (
+                btn_rect.x + (btn_w - btn_label.get_width()) // 2,
+                btn_rect.y + (btn_h - btn_label.get_height()) // 2,
+            ))
+
+            mouse_down = pygame.mouse.get_pressed()[0]
+            clicked = mouse_down and not self.mouse_was_down
+            self.mouse_was_down = mouse_down
+            if clicked and hovering:
+                self.show_minigame_popup = False
+                return TutorialScene(self)
 
         return self
