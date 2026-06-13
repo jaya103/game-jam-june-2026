@@ -10,19 +10,24 @@ clock = pygame.time.Clock()
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 running = True
 dt = 0
+score = 0
+score_increment = 10
+font = pygame.font.Font(None, 36)
 
 
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     handle_events()
-
+      
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
     pygame.draw.circle(screen, "red", player_pos, 40)
 
-
+    score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+    screen.blit(score_text, (10, 10)) 
+    font = pygame.font.Font('arial.ttf', 48)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
