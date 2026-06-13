@@ -113,15 +113,11 @@ class MainScene(Scene):
         screen.fill("purple")
 
         font = pygame.font.Font(None, 48)
-        score_text = font.render(f'Score: {self.score}', True, (255, 255, 255))
-        screen.blit(score_text, (10, 10)) 
 
         seconds = (pygame.time.get_ticks() - self.start_ticks)/1000
-        if seconds > 100: 
+        time_left = max(0, 100 - seconds)
+        if time_left <= 0: 
             return EndingScene()
-        
-        timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
-        screen.blit(timer_text, (10, 50))
         
         keys = pygame.key.get_pressed()
         moving = False
@@ -169,6 +165,16 @@ class MainScene(Scene):
         self.space_was_down = space_pressed
 
         draw_map(screen, self.map_data, self.player_sprites[self.last_player_direction][self.player_position], self.player_rect)
+
+        # HUD — drawn after the map so it appears on top.
+        score_text = font.render(f'Score: {self.score}', True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))
+
+        minutes = int(time_left // 60)
+        secs = int(time_left % 60)
+        timer_color = (255, 100, 100) if time_left <= 10 else (200, 255, 255)
+        timer_text = font.render(f'Time: {minutes}:{secs:02d}', True, timer_color)
+        screen.blit(timer_text, (10, 50))
 
         # Minigame popup: shown after the tutorial has been dismissed.
         if self.show_minigame_popup:

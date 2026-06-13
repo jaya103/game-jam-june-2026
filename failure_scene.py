@@ -9,30 +9,16 @@ class FailureScene(Scene):
         self.name = "Failure Scene"
         self.main_scene = main_scene
         self.enter_was_down = True  # require a fresh press to dismiss
+        self.failure_image = pygame.image.load("img/failure.png").convert()
 
     def render(self, screen, dt):
-        screen.fill((40, 15, 15))
-
-        title_font = pygame.font.Font(None, 140)
-        title = title_font.render("FAILURE", True, (255, 90, 90))
-        screen.blit(title, (
-            screen.get_width() // 2 - title.get_width() // 2,
-            screen.get_height() // 2 - title.get_height() - 20,
-        ))
-
-        sub_font = pygame.font.Font(None, 48)
-        sub = sub_font.render("The bear is still asleep...", True, "white")
-        screen.blit(sub, (
-            screen.get_width() // 2 - sub.get_width() // 2,
-            screen.get_height() // 2 + 20,
-        ))
-
-        prompt_font = pygame.font.Font(None, 36)
-        prompt = prompt_font.render("Press Enter to try again later, Esc to quit", True, (200, 200, 200))
-        screen.blit(prompt, (
-            screen.get_width() // 2 - prompt.get_width() // 2,
-            screen.get_height() - 80,
-        ))
+        # Blit the failure image, scaled to fit the screen width
+        img_rect = self.failure_image.get_rect()
+        scale = screen.get_width() / img_rect.width
+        scaled_size = (int(img_rect.width * scale), int(img_rect.height * scale))
+        scaled_image = pygame.transform.smoothscale(self.failure_image, scaled_size)
+        scaled_rect = scaled_image.get_rect(center=screen.get_rect().center)
+        screen.blit(scaled_image, scaled_rect)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:

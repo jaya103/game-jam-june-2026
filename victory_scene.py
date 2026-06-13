@@ -9,30 +9,16 @@ class VictoryScene(Scene):
         self.name = "Victory Scene"
         self.main_scene = main_scene
         self.enter_was_down = True  # require a fresh press to dismiss
+        self.success_image = pygame.image.load("img/success.png").convert()
 
     def render(self, screen, dt):
-        screen.fill((20, 40, 20))
-
-        title_font = pygame.font.Font(None, 140)
-        title = title_font.render("VICTORY!", True, (255, 230, 120))
-        screen.blit(title, (
-            screen.get_width() // 2 - title.get_width() // 2,
-            screen.get_height() // 2 - title.get_height() - 20,
-        ))
-
-        sub_font = pygame.font.Font(None, 48)
-        sub = sub_font.render("You woke up the bear!", True, "white")
-        screen.blit(sub, (
-            screen.get_width() // 2 - sub.get_width() // 2,
-            screen.get_height() // 2 + 20,
-        ))
-
-        prompt_font = pygame.font.Font(None, 36)
-        prompt = prompt_font.render("Press Enter to continue, Esc to quit", True, (200, 200, 200))
-        screen.blit(prompt, (
-            screen.get_width() // 2 - prompt.get_width() // 2,
-            screen.get_height() - 80,
-        ))
+        # Blit the success image, scaled to fit the screen width
+        img_rect = self.success_image.get_rect()
+        scale = screen.get_width() / img_rect.width
+        scaled_size = (int(img_rect.width * scale), int(img_rect.height * scale))
+        scaled_image = pygame.transform.smoothscale(self.success_image, scaled_size)
+        scaled_rect = scaled_image.get_rect(center=screen.get_rect().center)
+        screen.blit(scaled_image, scaled_rect)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
