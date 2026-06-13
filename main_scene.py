@@ -1,5 +1,6 @@
 from minigame_scene import MiniGameScene
 import pygame
+from collections import defaultdict
 
 from scene import Scene
 from ending_scene import EndingScene
@@ -16,7 +17,7 @@ level = [
     "W...................W",
     "WWWWWWWWWWWWWWWWWWWWW"
 ]
-TILE_SIZE = 50
+TILE_SIZE = 36
 def build_level(level_data):
     tiles = []
     for y, row in enumerate(level_data):
@@ -29,12 +30,26 @@ def build_level(level_data):
     return tiles, player_rect
 wall_rects, player_rect = build_level(level)
 
+DOWN = "down"
+UP = "up"
+LEFT = "left"
+RIGHT = "right"
+PLAYER_SPRITESHEET_SIZE = 36
+
 class MainScene(Scene):
     def __init__(self):
         super().__init__()
         self.name = "Main Scene"
         self.score = 0
         self.start_ticks = pygame.time.get_ticks()
+        self.player_spritesheet_img = pygame.image.load("img/GroundHog.png").convert_alpha()
+        self.player_sprites = defaultdict(dict)
+        self.last_player_direction = DOWN
+        y_names = {0: DOWN, 1: LEFT, 2: RIGHT, 3: UP}
+        x_names = {0: "idle", 1: "walk_1", 2: "walk_2"}
+        for y in range(4):
+            for x in range(3):
+                self.player_sprites[y_names[y]][x_names[x]] = self.player_spritesheet_img.subsurface(pygame.Rect(PLAYER_SPRITESHEET_SIZE*x, PLAYER_SPRITESHEET_SIZE*y, PLAYER_SPRITESHEET_SIZE, PLAYER_SPRITESHEET_SIZE))
 
     def render(self, screen, dt):
         screen.fill("purple")
@@ -53,18 +68,22 @@ class MainScene(Scene):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             player_rect.y -= 300 * dt
+            self.last_player_direction = UP
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.top = wall_rects[collidelist[0]].bottom
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             player_rect.y += 300 * dt
+            self.last_player_direction = DOWN
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.bottom = wall_rects[collidelist[0]].top
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             player_rect.x -= 300 * dt
+            self.last_player_direction = LEFT
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.left = wall_rects[collidelist[0]].right
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             player_rect.x += 300 * dt
+            self.last_player_direction = RIGHT
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.right = wall_rects[collidelist[0]].left
         if keys[pygame.K_ESCAPE]:
@@ -73,7 +92,7 @@ class MainScene(Scene):
             return MiniGameScene(self)
 
         for tile in wall_rects:
-            pygame.draw.rect(screen, (100, 100, 100), tile)    
-        pygame.draw.rect(screen, (0, 255, 0), player_rect)
+            pygame.draw.rect(screen, (100, 100, 100), tile)
+        screen.blit(self.player_sprites[self.last_player_direction]["idle"], player_rect)
 
         return self
