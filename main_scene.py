@@ -1,35 +1,15 @@
 from minigame_scene import MiniGameScene
 from tutorial_scene import TutorialScene
+from tokenize import group
+
 import pygame
+import pytmx
+import pyscroll
 from collections import defaultdict
 
 from scene import Scene
 from ending_scene import EndingScene
-
-level = [
-    ".....................",
-    ".....................",
-    ".....................",
-    "WWWWWWWWWWWWWWWWWWWWW",
-    "W...................W",
-    "W......WWWWWW...PWWWW",
-    "W...........WWWWWW..W",
-    "WWWWWWWWW........WW.W",
-    "W...................W",
-    "WWWWWWWWWWWWWWWWWWWWW"
-]
-TILE_SIZE = 36
-def build_level(level_data):
-    tiles = []
-    for y, row in enumerate(level_data):
-        for x, tile in enumerate(row):
-            if tile == "W":
-                rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                tiles.append(rect)
-            if tile == "P":
-                player_rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-    return tiles, player_rect
-wall_rects, player_rect = build_level(level)
+from minigame_scene import MiniGameScene
 
 DOWN = "down"
 UP = "up"
@@ -39,6 +19,57 @@ IDLE = "idle"
 WALK_1 = "walk_1"  
 WALK_2 = "walk_2"
 PLAYER_SPRITESHEET_SIZE = 36
+PLAYER_MAP_SIZE = 16           # displayed sprite size in map-pixel coords (one tile)
+PLAYER_COLLISION_SIZE = 4      # slightly smaller for forgiving collisions
+
+class Sprite(pygame.sprite.Sprite):
+    """
+    Simple Sprite class for on-screen things
+    
+    """
+    def __init__(self, surface, rect) -> None:
+        pygame.sprite.Sprite.__init__(self)
+
+        self.image = surface
+        self.rect = rect
+
+def draw_map(screen, map_data, player_sprite, player_rect):
+    # Make the scrolling layer
+    screen_size = (1280, 720)
+    map_layer = pyscroll.BufferedRenderer(map_data, screen_size, zoom=3)
+
+    # make the PyGame SpriteGroup with a scrolling map
+    group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
+
+    display_rect = player_sprite.get_rect(center=player_rect.center)
+    group.add(Sprite(player_sprite, display_rect))
+
+    # Center the layer and sprites on a sprite
+    group.center(player_rect.center)
+
+    # Draw the layer
+    group.draw(screen)
+
+
+def build_wall_rects_from_layer(tmx_data, layer_name):
+    """Build collision rectangles from non-zero tiles in a TMX layer."""
+    layer = None
+    for l in tmx_data.visible_layers:
+        if hasattr(l, 'data') and l.name == layer_name:
+            layer = l
+            break
+    if layer is None:
+        return []
+
+    tw = tmx_data.tilewidth
+    th = tmx_data.tileheight
+    rects = []
+    for y in range(tmx_data.height):
+        for x in range(tmx_data.width):
+            gid = layer.data[y][x]
+            if gid != 0:
+                rects.append(pygame.Rect(x * tw, y * th, tw, th))
+    return rects
 
 class MainScene(Scene):
     def __init__(self):
@@ -59,7 +90,24 @@ class MainScene(Scene):
         x_names = {0: IDLE, 1: WALK_1, 2: WALK_2}
         for y in range(4):
             for x in range(3):
-                self.player_sprites[y_names[y]][x_names[x]] = self.player_spritesheet_img.subsurface(pygame.Rect(PLAYER_SPRITESHEET_SIZE*x, PLAYER_SPRITESHEET_SIZE*y, PLAYER_SPRITESHEET_SIZE, PLAYER_SPRITESHEET_SIZE))
+                frame = self.player_spritesheet_img.subsurface(pygame.Rect(PLAYER_SPRITESHEET_SIZE*x, PLAYER_SPRITESHEET_SIZE*y, PLAYER_SPRITESHEET_SIZE, PLAYER_SPRITESHEET_SIZE))
+                self.player_sprites[y_names[y]][x_names[x]] = pygame.transform.scale(frame, (PLAYER_MAP_SIZE, PLAYER_MAP_SIZE))
+
+        # --- Load TMX Map ---
+        tmx_data = pytmx.load_pygame("map/thin_hedges.tmx")
+        # Make data source for the map
+        self.map_data = pyscroll.TiledMapData(tmx_data)
+
+        # Build collision rects from the "Lake and Hedges" layer
+        self.wall_rects = build_wall_rects_from_layer(tmx_data, "Lake and Hedges")
+
+        # Player rect in map-pixel coordinates (start in a walkable area)
+        self.player_rect = pygame.Rect(
+            3 * tmx_data.tilewidth,
+            15 * tmx_data.tileheight,
+            PLAYER_COLLISION_SIZE,
+            PLAYER_COLLISION_SIZE,
+        )
 
     def render(self, screen, dt):
         screen.fill("purple")
@@ -78,29 +126,29 @@ class MainScene(Scene):
         keys = pygame.key.get_pressed()
         moving = False
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            player_rect.y -= 300 * dt
+            self.player_rect.y -= 300 * dt
             moving = True
             self.last_player_direction = UP
-            if collidelist := player_rect.collidelistall(wall_rects):
-                player_rect.top = wall_rects[collidelist[0]].bottom
+            if collidelist := self.player_rect.collidelistall(self.wall_rects):
+                self.player_rect.top = self.wall_rects[collidelist[0]].bottom
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            player_rect.y += 300 * dt
+            self.player_rect.y += 300 * dt
             moving = True
             self.last_player_direction = DOWN
-            if collidelist := player_rect.collidelistall(wall_rects):
-                player_rect.bottom = wall_rects[collidelist[0]].top
+            if collidelist := self.player_rect.collidelistall(self.wall_rects):
+                self.player_rect.bottom = self.wall_rects[collidelist[0]].top
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            player_rect.x -= 300 * dt
+            self.player_rect.x -= 300 * dt
             moving = True
             self.last_player_direction = LEFT
-            if collidelist := player_rect.collidelistall(wall_rects):
-                player_rect.left = wall_rects[collidelist[0]].right
+            if collidelist := self.player_rect.collidelistall(self.wall_rects):
+                self.player_rect.left = self.wall_rects[collidelist[0]].right
         elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            player_rect.x += 300 * dt
+            self.player_rect.x += 300 * dt
             moving = True
             self.last_player_direction = RIGHT
-            if collidelist := player_rect.collidelistall(wall_rects):
-                player_rect.right = wall_rects[collidelist[0]].left
+            if collidelist := self.player_rect.collidelistall(self.wall_rects):
+                self.player_rect.right = self.wall_rects[collidelist[0]].left
         else:
             self.player_time_moving = 0
             self.player_position = IDLE
@@ -120,9 +168,7 @@ class MainScene(Scene):
             return MiniGameScene(self)
         self.space_was_down = space_pressed
 
-        for tile in wall_rects:
-            pygame.draw.rect(screen, (100, 100, 100), tile)
-        screen.blit(self.player_sprites[self.last_player_direction][self.player_position], player_rect)
+        draw_map(screen, self.map_data, self.player_sprites[self.last_player_direction][self.player_position], self.player_rect)
 
         # Minigame popup: shown after the tutorial has been dismissed.
         if self.show_minigame_popup:
