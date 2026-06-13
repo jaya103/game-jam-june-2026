@@ -1,4 +1,4 @@
-from gameformini import MiniGame
+from minigame_scene import MiniGameScene
 import pygame
 
 from scene import Scene
@@ -44,7 +44,7 @@ class MainScene(Scene):
         screen.blit(score_text, (10, 10)) 
 
         seconds = (pygame.time.get_ticks() - self.start_ticks)/1000
-        if seconds > 10: 
+        if seconds > 20: 
             return EndingScene()
         
         timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
@@ -70,7 +70,7 @@ class MainScene(Scene):
         if keys[pygame.K_ESCAPE]:
             return None
         if keys[pygame.K_SPACE]:
-            return MiniGame(self)
+            return MiniGameScene(self)
 
         for tile in wall_rects:
             pygame.draw.rect(screen, (100, 100, 100), tile)    
