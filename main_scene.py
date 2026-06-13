@@ -51,19 +51,19 @@ class MainScene(Scene):
         screen.blit(timer_text, (10, 50))
         
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:
+        if keys[pygame.K_w] or keys[pygame.K_UP]:
             player_rect.y -= 300 * dt
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.top = wall_rects[collidelist[0]].bottom
-        if keys[pygame.K_s]:
+        if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             player_rect.y += 300 * dt
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.bottom = wall_rects[collidelist[0]].top
-        if keys[pygame.K_a]:
+        if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             player_rect.x -= 300 * dt
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.left = wall_rects[collidelist[0]].right
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
             player_rect.x += 300 * dt
             if collidelist := player_rect.collidelistall(wall_rects):
                 player_rect.right = wall_rects[collidelist[0]].left

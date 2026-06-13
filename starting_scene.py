@@ -30,14 +30,13 @@ class StartingScene(Scene):
         pygame.draw.rect(shape_surf, (128, 128, 128, 168), shape_surf.get_rect())
         screen.blit(shape_surf, background_rect)
 
-        # Main game text
+        # Main game instructions text
         font = pygame.font.Font(None, 40)
         title_text = """Welcome to the Great Bear Awakening! It’s the start of spring, and as the first one to awake
-    as a groundhog, you have to wake up all the bears from their winter hibernation to gather all
-    the forest animals for a spring feast to kick off spring. Your goal is to wake up at
-    least 10 bears before the time runs out to make the meal a success.
-    Use the W-A-S-D keys to move and Esc to exit the game.
-    """
+        as a groundhog, you have to wake up all the bears from their winter hibernation to gather all
+        the forest animals for a spring feast to kick off spring. Your goal is to wake up at
+        least 10 bears before the time runs out to make the meal a success.
+        Use the W-A-S-D keys to move and Esc to exit the game."""
         title_vertical_offset = 0
         for line in title_text.splitlines():
             text = font.render(line.strip(), True, "white")
@@ -45,8 +44,12 @@ class StartingScene(Scene):
             screen.blit(text, text_rect)
             title_vertical_offset += 30
 
+        text = font.render("Press Enter/Z to Start", True, "white")
+        text_rect = text.get_rect(center=(screen.get_width() / 2, 650))
+        screen.blit(text, text_rect)
+
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RETURN]:
+        if keys[pygame.K_RETURN] or keys[pygame.K_z]:
             return MainScene()
         if keys[pygame.K_ESCAPE]:
             return None
