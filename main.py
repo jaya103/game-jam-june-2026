@@ -5,7 +5,9 @@ from events import handle_events
 # pygame setup!
 pygame.init()
 pygame.display.set_caption("The Great Bearwakening")
-screen = pygame.display.set_mode((1280, 720))
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 running = True
@@ -17,15 +19,22 @@ start_ticks = pygame.time.get_ticks()
 font = pygame.font.Font(None, 36)
 
 def main_menu(screen, dt):
-    global current_screen
+    global current_screen, running
+    background = pygame.image.load("img/Start_Menu_Background.png").convert()
+    background = pygame.transform.scale(background, (screen.get_width(), screen.get_height()))
+    imagerect = background.get_rect()
+    screen.fill("black")
+    screen.blit(background, imagerect)
     font = pygame.font.Font(None, 100)
     text = font.render("The Great Bearwakening", True, "white")
-    text_rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 100))
+    text_rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 300))
     screen.blit(text, text_rect)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_RETURN]:
         current_screen = main_game
+    if keys[pygame.K_ESCAPE]:
+        running = False
     
     return True
 
