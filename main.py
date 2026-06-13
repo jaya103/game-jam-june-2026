@@ -29,6 +29,20 @@ def main_menu(screen, dt):
     
     return True
 
+def ending_screen(screen, dt):
+    global current_screen, running
+    screen.fill("black")
+    font = pygame.font.Font(None, 100)
+    text = font.render("Game Over", True, "white")
+    text_rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 100))
+    screen.blit(text, text_rect)
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_RETURN]:
+        running = False
+    
+    return True
+
 def main_game(screen, dt):
     global running
     global current_screen
@@ -44,8 +58,7 @@ def main_game(screen, dt):
 
     seconds = (pygame.time.get_ticks() - start_ticks)/1000
     if seconds > 10: 
-        score = 0
-        start_ticks = pygame.time.get_ticks()
+        current_screen = ending_screen
     
     timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
     screen.blit(timer_text, (10, 50))
