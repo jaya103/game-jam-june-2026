@@ -4,7 +4,9 @@ from events import handle_events
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+width, height = 640, 480
+hbox, vbox = 20, 20
+screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
 player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 running = True
@@ -22,6 +24,7 @@ while running:
     pygame.draw.circle(screen, "red", player_pos, 40)
 
 
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         player_pos.y -= 300 * dt
@@ -33,6 +36,18 @@ while running:
         player_pos.x += 300 * dt
     if keys[pygame.K_ESCAPE]:
         running = False
+
+    if player_pos.y > height - hbox: player_pos.y = height - vbox
+
+    if player_pos.x < 40:
+        player_pos.x = 40
+    if player_pos.x > screen.get_width() - 40:
+        player_pos.x = screen.get_width() - 40
+    if player_pos.y < 40:
+        player_pos.y = 40
+    if player_pos.y > screen.get_height() - 40:
+        player_pos.y = screen.get_height() - 40
+    
 
     # RENDER YOUR GAME HERE
 
