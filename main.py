@@ -2,7 +2,7 @@
 import pygame
 from events import handle_events
 
-# pygame setup
+# pygame setup!
 pygame.init()
 pygame.display.set_caption("The Great Bearwakening")
 SCREEN_WIDTH = 1280
@@ -15,6 +15,7 @@ dt = 0
 current_screen = None
 score = 0
 score_increment = 10
+start_ticks = pygame.time.get_ticks()
 font = pygame.font.Font(None, 36)
 
 def main_menu(screen, dt):
@@ -39,7 +40,8 @@ def main_menu(screen, dt):
 
 def main_game(screen, dt):
     global running
-    global current_screen      
+    global current_screen
+    global score, start_ticks
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
 
@@ -49,6 +51,14 @@ def main_game(screen, dt):
     score_text = font.render(f'Score: {score}', True, (255, 255, 255))
     screen.blit(score_text, (10, 10)) 
 
+    seconds = (pygame.time.get_ticks() - start_ticks)/1000
+    if seconds > 10: 
+        score = 0
+        start_ticks = pygame.time.get_ticks()
+    
+    timer_text = font.render(f'Seconds: {seconds}', True, (200, 255, 255))
+    screen.blit(timer_text, (10, 50))
+    
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
         player_pos.y -= 300 * dt
