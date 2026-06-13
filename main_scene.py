@@ -9,6 +9,17 @@ from scene import Scene
 from ending_scene import EndingScene
 from minigame_scene import MiniGameScene
 
+DOWN = "down"
+UP = "up"
+LEFT = "left"
+RIGHT = "right"
+IDLE = "idle"
+WALK_1 = "walk_1"  
+WALK_2 = "walk_2"
+PLAYER_SPRITESHEET_SIZE = 36
+PLAYER_MAP_SIZE = 16           # displayed sprite size in map-pixel coords (one tile)
+PLAYER_COLLISION_SIZE = 4      # slightly smaller for forgiving collisions
+
 class Sprite(pygame.sprite.Sprite):
     """
     Simple Sprite class for on-screen things
@@ -28,7 +39,8 @@ def draw_map(screen, map_data, player_sprite, player_rect):
     # make the PyGame SpriteGroup with a scrolling map
     group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
 
-    group.add(Sprite(player_sprite, player_rect))
+    display_rect = player_sprite.get_rect(center=player_rect.center)
+    group.add(Sprite(player_sprite, display_rect))
 
     # Center the layer and sprites on a sprite
     group.center(player_rect.center)
@@ -56,17 +68,6 @@ def build_wall_rects_from_layer(tmx_data, layer_name):
             if gid != 0:
                 rects.append(pygame.Rect(x * tw, y * th, tw, th))
     return rects
-
-DOWN = "down"
-UP = "up"
-LEFT = "left"
-RIGHT = "right"
-IDLE = "idle"
-WALK_1 = "walk_1"  
-WALK_2 = "walk_2"
-PLAYER_SPRITESHEET_SIZE = 36
-PLAYER_MAP_SIZE = 16          # displayed sprite size in map-pixel coords (one tile)
-PLAYER_COLLISION_SIZE = 10    # slightly smaller for forgiving collisions
 
 class MainScene(Scene):
     def __init__(self):
