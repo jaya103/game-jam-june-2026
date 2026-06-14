@@ -1,6 +1,7 @@
 import pygame
 from scene import Scene
 from main_scene import MainScene
+from utils import get_main_font, get_text_font
 
 class StartingScene(Scene):
     def __init__(self):
@@ -14,7 +15,7 @@ class StartingScene(Scene):
         screen.blit(background, imagerect)
 
         # Draw title text, dropshadow first
-        font = pygame.font.Font(None, 100)
+        font = get_main_font(100)
         shadow_text = font.render("The Great Bearwakening", True, "grey")
         text_rect = shadow_text.get_rect(center=(screen.get_width() / 2, 100))
         screen.blit(shadow_text, text_rect)
@@ -31,7 +32,7 @@ class StartingScene(Scene):
         screen.blit(shape_surf, background_rect)
 
         # Main game instructions text
-        font = pygame.font.Font(None, 40)
+        font = get_text_font(40)
         title_text = """Welcome to the Great Bear Awakening! It’s the start of spring, and as the first one to awake
         as a groundhog, you have to wake up all the bears from their winter hibernation to gather all
         the forest animals for a spring feast to kick off spring. Your goal is to wake up at

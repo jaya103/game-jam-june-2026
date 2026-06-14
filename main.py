@@ -1,10 +1,12 @@
 import pygame
 import argparse
+
 from events import handle_events
 from starting_scene import StartingScene
 from ending_scene import EndingScene
 from main_scene import MainScene
 from minigame_scene import MiniGameScene
+from utils import get_main_font
 
 pygame.init()
 pygame.display.set_caption("The Great Bearwakening")
@@ -14,7 +16,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 dt = 0
 current_screen = None
-font = pygame.font.Font(None, 36)
+font = get_main_font(36)
 
 
 parser = argparse.ArgumentParser(

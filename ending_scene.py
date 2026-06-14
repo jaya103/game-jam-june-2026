@@ -1,6 +1,7 @@
 import pygame
 
 from scene import Scene
+from utils import get_main_font
 
 class EndingScene(Scene):
     def __init__(self):
@@ -9,7 +10,7 @@ class EndingScene(Scene):
 
     def render(self, screen, dt):
         screen.fill("black")
-        font = pygame.font.Font(None, 100)
+        font = get_main_font(72)
         text = font.render("Game Over", True, "white")
         text_rect = text.get_rect(center=(screen.get_width() / 2, screen.get_height() / 2 - 100))
         screen.blit(text, text_rect)

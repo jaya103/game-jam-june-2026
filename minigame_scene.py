@@ -6,6 +6,8 @@ from failure_scene import FailureScene
 import time
 import random
 
+from utils import get_main_font
+
 class MiniGameScene(Scene):
     def __init__(self, main_scene=None):
         self.name = "Mini Game Scene"
@@ -43,7 +45,7 @@ class MiniGameScene(Scene):
 
 
         screen.fill("black")
-        font = pygame.font.Font(None, 100)
+        font = get_main_font(100)
         minigametext = font.render("MINIGAME", True, "white")
         screen.blit(minigametext, ([screen.get_width() // 2 - minigametext.get_width() // 2, 50]))
 
@@ -163,8 +165,8 @@ class MiniGameScene(Scene):
 
      
         # Corner tutorial box (top-right) - quick reminder of the controls.
-        corner_font = pygame.font.Font(None, 30)
-        corner_title_font = pygame.font.Font(None, 36)
+        corner_font = get_main_font(30)
+        corner_title_font = get_main_font(36)
         corner_w = 360
         corner_padding = 14
         corner_x = screen.get_width() - corner_w - 12

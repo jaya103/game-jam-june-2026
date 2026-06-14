@@ -1,6 +1,4 @@
 from minigame_scene import MiniGameScene
-from tutorial_scene import TutorialScene
-
 
 import pygame
 import pytmx
@@ -10,6 +8,7 @@ from collections import defaultdict
 from scene import Scene
 from ending_scene import EndingScene
 from minigame_scene import MiniGameScene
+from utils import get_main_font
 
 DOWN = "down"
 UP = "up"
@@ -21,6 +20,7 @@ WALK_2 = "walk_2"
 PLAYER_SPRITESHEET_SIZE = 36
 PLAYER_MAP_SIZE = 16           # displayed sprite size in map-pixel coords (one tile)
 PLAYER_COLLISION_SIZE = 4      # slightly smaller for forgiving collisions
+PLAYER_MAP_LAYER = 5
 
 class Sprite(pygame.sprite.Sprite):
     """
@@ -39,7 +39,7 @@ def draw_map(screen, map_data, player_sprite, player_rect):
     map_layer = pyscroll.BufferedRenderer(map_data, screen_size, zoom=3)
 
     # make the PyGame SpriteGroup with a scrolling map
-    group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=2)
+    group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=PLAYER_MAP_LAYER)
 
     display_rect = player_sprite.get_rect(center=player_rect.center)
     group.add(Sprite(player_sprite, display_rect))
@@ -99,7 +99,9 @@ class MainScene(Scene):
         self.map_data = pyscroll.TiledMapData(tmx_data)
 
         # Build collision rects from the "Lake and Hedges" layer
-        self.wall_rects = build_wall_rects_from_layer(tmx_data, "Lake and Hedges")
+        # TODO: Switch back once we fix the collisions
+        # self.wall_rects = build_wall_rects_from_layer(tmx_data, "Lake and Hedges")
+        self.wall_rects = []
 
         # Player rect in map-pixel coordinates (start in a walkable area)
         self.player_rect = pygame.Rect(
@@ -112,8 +114,7 @@ class MainScene(Scene):
     def render(self, screen, dt):
         screen.fill("purple")
 
-        font = pygame.font.Font(None, 48)
-
+        font = get_main_font(48)
         seconds = (pygame.time.get_ticks() - self.start_ticks)/1000
         time_left = max(0, 100 - seconds)
         if time_left <= 0: 
@@ -185,7 +186,7 @@ class MainScene(Scene):
             pygame.draw.rect(screen, (30, 30, 30), popup_rect, border_radius=8)
             pygame.draw.rect(screen, (255, 255, 255), popup_rect, width=2, border_radius=8)
 
-            popup_font = pygame.font.Font(None, 32)
+            popup_font = get_main_font(32)
             line1 = popup_font.render("Ready for the minigame?", True, "white")
             screen.blit(line1, (popup_x + (popup_w - line1.get_width()) // 2, popup_y + 16))
 
