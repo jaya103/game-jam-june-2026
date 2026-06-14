@@ -1,6 +1,5 @@
 import pygame
 import argparse
-import asyncio
 from events import handle_events
 from starting_scene import StartingScene
 from ending_scene import EndingScene
@@ -23,7 +22,7 @@ parser = argparse.ArgumentParser(
                     description='Our game jam game')
 parser.add_argument('-s', '--scene',
                     default='starting_scene')  # on/off flag
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 scene_mapping = {
     'starting_scene': StartingScene,
@@ -44,7 +43,6 @@ async def main():
         # flip() the display to put your work on screen
         pygame.display.flip()
         dt = clock.tick(60) / 1000
-        await asyncio.sleep(0)  # yield control to the event loop to keep the UI responsive (for HTML)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
