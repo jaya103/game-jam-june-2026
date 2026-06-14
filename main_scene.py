@@ -94,7 +94,7 @@ class MainScene(Scene):
                 self.player_sprites[y_names[y]][x_names[x]] = pygame.transform.scale(frame, (PLAYER_MAP_SIZE, PLAYER_MAP_SIZE))
 
         # --- Load TMX Map ---
-        tmx_data = pytmx.load_pygame("map/thin_hedges.tmx")
+        tmx_data = pytmx.load_pygame("map/thin_hedges424.tmx")
         # Make data source for the map
         self.map_data = pyscroll.TiledMapData(tmx_data)
 

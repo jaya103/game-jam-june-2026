@@ -32,7 +32,7 @@ scene_mapping = {
 }
 
 current_scene = scene_mapping.get(args.scene, StartingScene)()
-async def main():
+def main():
     global current_scene, dt
     while current_scene:  # This will be None if the user pressed Esc
         # poll for events
