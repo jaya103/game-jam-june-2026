@@ -1,5 +1,5 @@
 from minigame_scene import MiniGameScene
-from tutorial_scene import TutorialScene
+# from tutorial_scene import TutorialScene
 
 
 import pygame
@@ -115,7 +115,7 @@ class MainScene(Scene):
         font = pygame.font.Font(None, 48)
 
         seconds = (pygame.time.get_ticks() - self.start_ticks)/1000
-        time_left = max(0, 100 - seconds)
+        time_left = max(0, 240 - seconds)
         if time_left <= 0: 
             return EndingScene()
         
@@ -211,6 +211,6 @@ class MainScene(Scene):
             self.mouse_was_down = mouse_down
             if clicked and hovering:
                 self.show_minigame_popup = False
-                return TutorialScene(self)
+                return MiniGameScene(self)
 
         return self
