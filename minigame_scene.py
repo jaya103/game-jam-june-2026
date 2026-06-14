@@ -16,7 +16,7 @@ class MiniGameScene(Scene):
         self.capture_bar_position = 0
         self.acceleration = 0
         self.velocity = 0
-
+    
         self.bear_position = None  # set on first render once bar_width is known
         self.bear_velocity = 0
         self.bear_acceleration = 0
@@ -25,14 +25,14 @@ class MiniGameScene(Scene):
 
         # Progress tracker (0..100). Stay on the bear to fill it; falls off otherwise.
         self.progress = 0.0
-        self.progress_gain_per_sec = 30.0   # how fast you fill while hovering
+        self.progress_gain_per_sec = 20.0   # how fast you fill while hovering
         self.progress_loss_per_sec = 18.0   # how fast you lose while off the bear
 
         # Score drain: the main scene score ticks down once per second once the
         # player first touches the bear.  Reaching 0 = failure.
         self.score_drain_timer = 0.0
         self.score_drain_active = False
-        self.score_drain_grace = 5.0  # seconds before drain starts after first bear contact
+        self.score_drain_grace = 3.0  # seconds before drain starts after first bear contact
         self.score_drain_grace_started = False
 
         # Bear doesn't move until the player starts moving.
@@ -44,10 +44,43 @@ class MiniGameScene(Scene):
         global current_screen, running, start_ticks
 
 
-        screen.fill("black")
-        font = get_main_font(100)
-        minigametext = font.render("MINIGAME", True, "white")
+        background_image = pygame.image.load("img/sunset.png").convert()
+        screen.blit(background_image, [0, 0])
+        font = pygame.font.Font(None, 100)
+        minigametext = font.render("DON'T ANGER THE BEAR", True, "black")
         screen.blit(minigametext, ([screen.get_width() // 2 - minigametext.get_width() // 2, 50]))
+
+        # Tutorial box below the header.
+        header_height = minigametext.get_height()
+        corner_font = pygame.font.Font(None, 30)
+        corner_title_font = pygame.font.Font(None, 36)
+        corner_w = screen.get_width()
+        corner_padding = 40
+        corner_x = 0
+        corner_y = 50 + header_height + 10
+        corner_lines = wrap_text(
+            "Hold Z to push the cursor right. "
+            "Keep your cursor on the bear to fill the progress bar. "
+            "Slip off and the progress drains. ",
+            corner_font,
+            corner_w - corner_padding * 2,
+        )
+        title_surf = corner_title_font.render("Tutorial", True, (255, 230, 120))
+        line_h = corner_font.get_linesize()
+        corner_h = corner_padding * 2 + title_surf.get_height() + 6 + line_h * len(corner_lines)
+        corner_rect = pygame.Rect(corner_x, corner_y, corner_w, corner_h)
+        tutorial_bg = pygame.Surface(corner_rect.size, pygame.SRCALPHA)
+        pygame.draw.rect(tutorial_bg, (20, 20, 20, 128), tutorial_bg.get_rect(), border_radius=8)
+        screen.blit(tutorial_bg, corner_rect.topleft)
+        pygame.draw.rect(screen, (255, 255, 255), corner_rect, width=2, border_radius=8)
+        title_width = title_surf.get_width()
+        screen.blit(title_surf, (corner_x + (corner_w - title_width) / 2, corner_y + corner_padding))
+        text_y = corner_y + corner_padding + title_surf.get_height() + 6
+        for line in corner_lines:
+            line_surf = corner_font.render(line, True, "white")
+            line_width = line_surf.get_width()
+            screen.blit(line_surf, (corner_x + (corner_w - line_width) / 2, text_y))
+            text_y += line_h
 
         bear_width, bear_height = 60, 60
         cursor_width, cursor_height = 110, 90
@@ -74,7 +107,7 @@ class MiniGameScene(Scene):
                     self.bear_change_timer = random.uniform(1.2, 2.6)
 
             # Apply acceleration toward target direction (0 = drift to a stop).
-            bear_accel_strength = 0.45
+            bear_accel_strength = 0.9
             self.bear_acceleration = self.bear_target_direction * bear_accel_strength
 
             if self.bear_target_direction == 0:
@@ -86,7 +119,7 @@ class MiniGameScene(Scene):
                 self.bear_velocity += self.bear_acceleration
 
             # Clamp max velocity
-            max_bear_speed = 3.5
+            max_bear_speed = 6.0
             if self.bear_velocity > max_bear_speed:
                 self.bear_velocity = max_bear_speed
             elif self.bear_velocity < -max_bear_speed:
