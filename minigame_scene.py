@@ -47,13 +47,6 @@ class MiniGameScene(Scene):
         minigametext = font.render("MINIGAME", True, "white")
         screen.blit(minigametext, ([screen.get_width() // 2 - minigametext.get_width() // 2, 50]))
 
-        # Show the main-scene score (drains over time — lose if it hits 0).
-        current_score = self.main_scene.score if self.main_scene else 0
-        score_font = pygame.font.Font(None, 48)
-        score_color = (255, 100, 100) if current_score <= 3 else (255, 255, 255)
-        score_surf = score_font.render(f"Score: {current_score}", True, score_color)
-        screen.blit(score_surf, (10, 10))
-
         bear_width, bear_height = 60, 60
         cursor_width, cursor_height = 110, 90
         bar_width = screen.get_width()
@@ -168,14 +161,7 @@ class MiniGameScene(Scene):
         pygame.draw.rect(screen, (255, 255, 255),
                          [progress_bar_x, progress_bar_y, progress_bar_w, progress_bar_h], width=2)
 
-        progress_font = pygame.font.Font(None, 32)
-        progress_label = progress_font.render(
-            f"Progress: {int(self.progress)} / 100", True, "white")
-        screen.blit(progress_label, (
-            progress_bar_x + (progress_bar_w - progress_label.get_width()) // 2,
-            progress_bar_y - progress_label.get_height() - 4,
-        ))
-
+     
         # Corner tutorial box (top-right) - quick reminder of the controls.
         corner_font = pygame.font.Font(None, 30)
         corner_title_font = pygame.font.Font(None, 36)
@@ -186,9 +172,7 @@ class MiniGameScene(Scene):
         corner_lines = wrap_text(
             "Hold Z to push the cursor right. "
             "Keep your cursor on the bear to fill the progress bar. "
-            "Slip off and the progress drains. "
-            "Your score drops by 1 every second - if it hits 0 you lose! "
-            "Fill progress to 100 to wake the bear!",
+            "Slip off and the progress drains. ",
             corner_font,
             corner_w - corner_padding * 2,
         )

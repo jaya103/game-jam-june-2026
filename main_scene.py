@@ -109,19 +109,6 @@ class MainScene(Scene):
             PLAYER_COLLISION_SIZE,
         )
 
-        # --- Atmospheric Tint Effect ---
-        # Create a texture for a vignette effect, this is done once.
-        vignette_radius = 400
-        self.vignette_texture = pygame.Surface((vignette_radius * 2, vignette_radius * 2), pygame.SRCALPHA)
-        for i in range(vignette_radius, 0, -2):
-            alpha = 255 - (i * 255 // vignette_radius)
-            pygame.draw.circle(
-                self.vignette_texture, 
-                (0, 0, 0, alpha), 
-                (vignette_radius, vignette_radius), 
-                i
-            )
-
     def render(self, screen, dt):
         screen.fill("purple")
 
@@ -178,24 +165,6 @@ class MainScene(Scene):
         self.space_was_down = space_pressed
 
         draw_map(screen, self.map_data, self.player_sprites[self.last_player_direction][self.player_position], self.player_rect)
-
-        # --- Atmospheric Tint Effect ---
-        # As time runs out, the ambient darkness intensifies.
-        darkness_ratio = 1 - (time_left / 100.0)
-        ambient_alpha = max(0, int(190 * darkness_ratio))
-
-        if ambient_alpha > 0:
-            # Create a full-screen surface for the darkness
-            lighting_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
-            # Fill it with a moody, dark blue color
-            lighting_surface.fill((10, 10, 40, ambient_alpha))
-
-            # "Punch out" a soft hole in the darkness layer to create a vignette
-            vignette_rect = self.vignette_texture.get_rect(center=screen.get_rect().center)
-            lighting_surface.blit(self.vignette_texture, vignette_rect, special_flags=pygame.BLEND_RGBA_SUB)
-            
-            # Draw the completed lighting layer over the screen
-            screen.blit(lighting_surface, (0, 0))
 
         # HUD — drawn after the map so it appears on top.
         score_text = font.render(f'Score: {self.score}', True, (255, 255, 255))
